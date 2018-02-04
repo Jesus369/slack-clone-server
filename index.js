@@ -5,6 +5,7 @@ import bodyParser from 'body-parser'
 import express from 'express'
 import models from './models'
 import path from 'path'
+import cors from 'cors'
 
 /*fileLoader will grab all schema files within the schema/resolvers folder*/
 /*mergeTypes/Resolvers will converted them into an array*/
@@ -21,6 +22,10 @@ const schema = makeExecutableSchema({
 const graphqlEndpoint = '/graphql'
 const app = express ()
 
+app.use(cors('*'))
+
+/*Passing in Schema folder.*/
+/*Passing in Models folder to create from resolvers folder*/
 app.use(
   graphqlEndpoint,
   bodyParser.json(),
@@ -28,8 +33,11 @@ app.use(
     schema,
     context: {
       models,
-    }
-  }));
+      user : {id: 1}
+    },
+  })
+);
+
 /*Telling graphiql what our graph endpoint is*/
 app.use('/graphiql', graphiqlExpress({ endpointURL: graphqlEndpoint}));
 
