@@ -1,8 +1,12 @@
 export default {
   Query: {
-
+    getUser: (parent, {id}, {models}) => models.User.findOne({where : {id} }),
+    allUsers: (parent, args, {models}) => models.User.findAll(),
   },
   Mutation: {
-    createUser: (parent, args, context) = >
+    createUser: (parent, args, {models}) => models.User.create(args),
   },
 };
+
+/* Args : Specificatons required to build a user coming from mutation's(schema folder)*/
+/*grabbing models from express(index.js)*/
