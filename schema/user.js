@@ -3,12 +3,13 @@ export default `
     id: Int!
     username: String!
     email: String!,
+    password: String!,
     teams : [Team!]!
   }
 
   type Query {
     getUser(id: Int!): User!
-    allUsers(id:Int!): [User!]!
+    allUsers: [User!]!
   }
 
   type Mutation {
