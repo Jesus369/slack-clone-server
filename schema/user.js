@@ -12,10 +12,17 @@ export default `
     allUsers: [User!]!
   }
 
-  type Mutation {
-    createUser(username: String!, email: String!, password:String!): User!
+  type RegisterResponse {
+    ok: Boolean!
+    user: User
+    errors: [Error!]
   }
-`
+
+  type Mutation {
+    register(username: String!, email: String!, password:String!): RegisterResponse!
+  }
+`;
+
 /*type User : define what a User requires*/
 /*Query function : getUser passing in an id and will return "User"*/
 /*Query function : getUsers passing in an id and will return an array of "User"*/
