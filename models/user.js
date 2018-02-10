@@ -28,12 +28,21 @@ export default (sequelize, DataTypes) => {
           }
         }
       },
-      password: DataTypes.STRING
+      password: {
+        type: DataTypes.STRING,
+        validate: {
+          len: {
+            args: [5, 100],
+            msg: "The password must be between 5 - 100 characters long"
+          }
+        }
+      }
     },
     {
       hooks: {
         afterValidate: async user => {
-          user.password = await bcrypy.hash(user.password, 12);
+          const hashedPassword = await bcrypt.hash(user.password, 12);
+          user.password = hashedPassword;
         }
       }
     }
