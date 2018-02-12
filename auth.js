@@ -5,8 +5,7 @@ import _ from "lodash";
 export const createTokens = async (user, secret, secret2) => {
   const createToken = jwt.sign(
     {
-      /*Grab and blend the user ID with the secret, unwrap the secret and find the ID*/
-      /*Request user's token when they make a request*/
+      /*Select user's token when they make a request*/
       user: _.pick(user, ["id"])
     },
     secret,
@@ -29,9 +28,16 @@ export const createTokens = async (user, secret, secret2) => {
   return [createToken, createRefreshToken];
 };
 
-export const refreshTokens = async (token, refreshToken, models, SECRET) => {
-  let userId = -1;
+export const refreshTokens = async (
+  token,
+  refreshToken,
+  models,
+  SECRET,
+  SECRET2
+) => {
+  let userId = 0;
   try {
+    /*Decode the token to locate the user's id*/
     const { user: { id } } = jwt.decode(refreshToken);
     userId = id;
   } catch (err) {
@@ -41,15 +47,15 @@ export const refreshTokens = async (token, refreshToken, models, SECRET) => {
   if (!userId) {
     return {};
   }
-
+  /*Fetching the user*/
   const user = await models.User.findOne({ where: { id: userId }, raw: true });
-
   if (!user) {
     return {};
   }
 
+  refreshSecret = user.password + SECRET2;
   try {
-    jwt.verify(refreshToken, user.refreshSecret);
+    jwt.verify(refreshToken, refreshSecret);
   } catch (err) {
     return {};
   }
@@ -57,7 +63,7 @@ export const refreshTokens = async (token, refreshToken, models, SECRET) => {
   const [newToken, newRefreshToken] = await createTokens(
     user,
     SECRET,
-    user.refreshSecret
+    refreshSecret
   );
   return {
     token: newToken,
